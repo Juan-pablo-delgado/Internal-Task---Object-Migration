@@ -1,7 +1,9 @@
 import axios from "axios";
+import { getAllLocations } from "./getAllLocations";
+import { createLocation } from "./createLocation";
 const logger = require("pino")();
 
-const API_COTACT = process.env.CONTACT_HS!;
+const API_URL = process.env.API_URL!;
 const API_KEY = process.env.API_KEY_HS;
 const headers = {
   Authorization: `Bearer ${API_KEY}`,
@@ -43,18 +45,23 @@ export const createPokemon = async (pokemon: Pokemon) => {
     speed: searhcStat(pokemon.stats, "speed"),
     types: searchTypes(pokemon.types).join(";"),
   };
-  try {
-    axios.post(
-      API_COTACT,
-      {
-        properties: newPokemon,
-      },
-      {
-        headers,
-      }
-    );
-    logger.info(`Pokemon ${pokemon.name} created correctly in HubSpot`);
-  } catch (error) {
-    logger.error(`Failed to load Pokemon ${pokemon.name}: ${error}`);
-  }
+  const locationAreas = await getAllLocations(pokemon.location_area_encounters);
+  locationAreas.forEach(async (area) => {
+    await createLocation(area, locationAreas.length);
+  });
+
+  // try {
+  //   axios.post(
+  //     `${API_URL}/contacts`,
+  //     {
+  //       properties: newPokemon,
+  //     },
+  //     {
+  //       headers,
+  //     }
+  //   );
+  //   logger.info(`Pokemon ${pokemon.name} created correctly in HubSpot`);
+  // } catch (error) {
+  //   logger.error(`Failed to load Pokemon ${pokemon.name}: ${error}`);
+  // }
 };
