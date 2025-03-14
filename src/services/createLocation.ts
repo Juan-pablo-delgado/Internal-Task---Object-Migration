@@ -12,6 +12,7 @@ export const createLocation = async (
   areas: Number
 ) => {
   console.log(LocationArea);
+  //! Revisar
   const newLocation = {
     name: LocationArea.location_area.name,
     number_of_areas: areas,
