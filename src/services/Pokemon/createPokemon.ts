@@ -1,6 +1,6 @@
 import axios from "axios";
-import { getAllLocations } from "./getAllLocations";
-import { createLocation } from "./createLocation";
+import { getAllLocations } from "../getAllLocations";
+import { createLocation } from "../createLocation";
 const logger = require("pino")();
 
 const API_URL = process.env.API_URL!;

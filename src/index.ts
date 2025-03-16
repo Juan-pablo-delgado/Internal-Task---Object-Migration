@@ -1,4 +1,4 @@
-import { createPokemon } from "./services/createPokemon";
+import { createPokemon } from "./services/Pokemon/createPokemon";
 import { getAllPokemons } from "./services/getAllPokemons";
 import { getPokemon } from "./services/getPokemon";
 
