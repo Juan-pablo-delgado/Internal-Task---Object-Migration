@@ -45,23 +45,24 @@ export const createPokemon = async (pokemon: Pokemon) => {
     speed: searhcStat(pokemon.stats, "speed"),
     types: searchTypes(pokemon.types).join(";"),
   };
-  const locationAreas = await getAllLocations(pokemon.location_area_encounters);
-  locationAreas.forEach(async (area) => {
-    await createLocation(area, locationAreas.length);
-  });
 
-  // try {
-  //   axios.post(
-  //     `${API_URL}/contacts`,
-  //     {
-  //       properties: newPokemon,
-  //     },
-  //     {
-  //       headers,
-  //     }
-  //   );
-  //   logger.info(`Pokemon ${pokemon.name} created correctly in HubSpot`);
-  // } catch (error) {
-  //   logger.error(`Failed to load Pokemon ${pokemon.name}: ${error}`);
-  // }
+  const locationAreas = await getAllLocations(pokemon.location_area_encounters);
+  const associations = await Promise.all(
+    locationAreas.map(async (area) => {
+      return await createLocation(area);
+    })
+  );
+
+  try {
+    axios.post(`${API_URL}/contacts`,
+      {
+        properties: newPokemon,
+        associations
+      },
+      { headers, }
+    );
+    logger.info(`Pokemon ${pokemon.name} created correctly in HubSpot`);
+  } catch (error) {
+    logger.error(`Failed to load Pokemon ${pokemon.name}: ${error}`);
+  }
 };

@@ -8,32 +8,36 @@ const headers = {
 };
 
 export const createLocation = async (
-  LocationArea: Location_area_encounters,
-  areas: Number
+  locationArea: Location_area_encounters,
 ) => {
-  console.log(LocationArea);
-  //! Revisar
+
   const newLocation = {
-    name: LocationArea.location_area.name,
-    number_of_areas: areas,
-    location_id: 0,
+    name: locationArea.location_area.name,
+    location_id: Number(locationArea.location_area.url.match(/(\d+)\/$/)![1]),
   };
-  //   try {
-  //     axios.post(
-  //       `${API_URL}/companies`,
-  //       {
-  //         properties: newLocation,
-  //       },
-  //       {
-  //         headers,
-  //       }
-  //     );
-  //     logger.info(
-  //       `Pokemon ${LocationArea.location_area.name} created correctly in HubSpot`
-  //     );
-  //   } catch (error) {
-  //     logger.error(
-  //       `Failed to load Pokemon ${LocationArea.location_area.name}: ${error}`
-  //     );
-  //   }
+
+  try {
+    const id = await axios.post(`${API_URL}/companies`,
+      { properties: newLocation },
+      { headers }
+    ).then((res) => {
+      return (res.data.id)
+    })
+    logger.info(`Pokemon ${locationArea.location_area.name} created correctly in HubSpot`);
+    return {
+      "types": [
+        {
+          "associationCategory": "HUBSPOT_DEFINED",
+          "associationTypeId": 279
+        }
+      ],
+      "to": {
+        "id": id
+      }
+    }
+  } catch (error) {
+    logger.error(
+      `Failed to load Pokemon ${locationArea.location_area.name}: ${error}`
+    );
+  }
 };
