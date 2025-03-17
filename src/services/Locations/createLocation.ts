@@ -39,5 +39,6 @@ export const createLocation = async (
     logger.error(
       `Failed to load Pokemon ${locationArea.location_area.name}: ${error}`
     );
+    return null;
   }
 };

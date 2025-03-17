@@ -1,6 +1,9 @@
 import axios from "axios";
-import { getAllLocations } from "../getAllLocations";
-import { createLocation } from "../createLocation";
+import { getAllLocations } from "../Locations/getAllLocations";
+import { createLocation } from "../Locations/createLocation";
+import { getAllMoves } from "../Moves/getAllMoves";
+import { create } from "domain";
+import { createMove } from "../Moves/createMove";
 const logger = require("pino")();
 
 const API_URL = process.env.API_URL!;
@@ -47,11 +50,23 @@ export const createPokemon = async (pokemon: Pokemon) => {
   };
 
   const locationAreas = await getAllLocations(pokemon.location_area_encounters);
-  const associations = await Promise.all(
+  const locationAssociations = await Promise.all(
     locationAreas.map(async (area) => {
       return await createLocation(area);
     })
   );
+
+  const moves = await Promise.all(
+    pokemon.moves.map(async (move) => {
+      return await getAllMoves(move.move.url);
+    }));
+
+
+  const moveAssociations = await Promise.all(moves.map(async (move) => {
+    return await createMove(move);
+  }))
+
+  const associations = [...moveAssociations.filter((e) => e !== null)];
 
   try {
     axios.post(`${API_URL}/contacts`,

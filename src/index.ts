@@ -1,6 +1,6 @@
 import { createPokemon } from "./services/Pokemon/createPokemon";
-import { getAllPokemons } from "./services/getAllPokemons";
-import { getPokemon } from "./services/getPokemon";
+import { getAllPokemons } from "./services/Pokemon/getAllPokemons";
+import { getPokemon } from "./services/Pokemon/getPokemon";
 
 const POKE_API = process.env.POKE_API!;
 
