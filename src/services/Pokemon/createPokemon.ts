@@ -6,10 +6,12 @@ import { create } from "domain";
 import { createMove } from "../Moves/createMove";
 const logger = require("pino")();
 
-const API_URL = process.env.API_URL!;
-const API_KEY = process.env.API_KEY_HS;
+import {  enviromentVariables } from "../../config/envVariables";
+const { API_URL, API_KEY_HS } = enviromentVariables;
+
+
 const headers = {
-  Authorization: `Bearer ${API_KEY}`,
+  Authorization: `Bearer ${API_KEY_HS}`,
 };
 
 const searhcStat = (stats: Stat[], stat: string): number => {

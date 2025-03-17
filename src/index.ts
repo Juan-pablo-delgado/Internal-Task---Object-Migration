@@ -1,8 +1,8 @@
 import { createPokemon } from "./services/Pokemon/createPokemon";
 import { getAllPokemons } from "./services/Pokemon/getAllPokemons";
 import { getPokemon } from "./services/Pokemon/getPokemon";
-
-const POKE_API = process.env.POKE_API!;
+import { enviromentVariables } from "./config/envVariables";
+const { POKE_API } = enviromentVariables
 
 const loadAll = async (): Promise<void> => {
   const pokemons: Pokemons[] = await getAllPokemons(POKE_API, 1);

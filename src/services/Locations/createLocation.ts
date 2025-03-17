@@ -1,10 +1,10 @@
 import axios from "axios";
 const logger = require("pino")();
+import {  enviromentVariables } from "../../config/envVariables";
+const { API_URL, API_KEY_HS } = enviromentVariables;
 
-const API_URL = process.env.API_URL!;
-const API_KEY = process.env.API_KEY_HS;
 const headers = {
-  Authorization: `Bearer ${API_KEY}`,
+  Authorization: `Bearer ${API_KEY_HS}`,
 };
 
 export const createLocation = async (
