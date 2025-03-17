@@ -7,32 +7,27 @@ const headers = {
   Authorization: `Bearer ${API_KEY}`,
 };
 
-export const createMove = async (
-  move: MoveInfo,
-) => {
+export const createMove = async (move: MoveInfo) => {
   try {
-    const id = await axios.post(`${API_URL}/moves`,
-      { properties: move },
-      { headers }
-    ).then((res) => {
-      return (res.data.id)
-    })
+    const id = await axios
+      .post(`${API_URL}/moves`, { properties: move }, { headers })
+      .then((res) => {
+        return res.data.id;
+      });
     logger.info(`Move ${move.name} created correctly in HubSpot`);
     return {
-      "types": [
+      types: [
         {
-          "associationCategory": "HUBSPOT_DEFINED",
-          "associationTypeId": 60
-        }
+          associationCategory: "USER_DEFINED",
+          associationTypeId: 60,
+        },
       ],
-      "to": {
-        "id": id
-      }
-    }
+      to: {
+        id: id,
+      },
+    };
   } catch (error) {
-    logger.error(
-      `Failed to load Move ${move.name}: ${error}`
-    );
+    logger.error(`Failed to load Move ${move.name}: ${error}`);
     return null;
   }
 };

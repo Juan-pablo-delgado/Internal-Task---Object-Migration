@@ -59,22 +59,28 @@ export const createPokemon = async (pokemon: Pokemon) => {
   const moves = await Promise.all(
     pokemon.moves.map(async (move) => {
       return await getAllMoves(move.move.url);
-    }));
+    })
+  );
 
+  const moveAssociations = await Promise.all(
+    moves.map(async (move) => {
+      return await createMove(move);
+    })
+  );
 
-  const moveAssociations = await Promise.all(moves.map(async (move) => {
-    return await createMove(move);
-  }))
-
-  const associations = [...moveAssociations.filter((e) => e !== null)];
-
+  // const associations = [...moveAssociations.filter((e) => e !== null)];
+  const associations = [
+    ...locationAssociations,
+    ...moveAssociations.filter((e) => e !== null),
+  ];
   try {
-    axios.post(`${API_URL}/contacts`,
+    axios.post(
+      `${API_URL}/contacts`,
       {
         properties: newPokemon,
-        associations
+        associations,
       },
-      { headers, }
+      { headers }
     );
     logger.info(`Pokemon ${pokemon.name} created correctly in HubSpot`);
   } catch (error) {
