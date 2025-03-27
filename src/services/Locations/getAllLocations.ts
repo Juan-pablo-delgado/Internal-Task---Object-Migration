@@ -1,15 +1,17 @@
 import axios from "axios";
 const logger = require("pino")();
 
-export const getAllLocations = async (
+const getAllLocations = async (
   url: string,
-): Promise<Location_area_encounters[]> => {
-
+  limit: number
+): Promise<Pokemons[]> => {
   try {
-    const location = await axios.get(url);
-    return location.data;
+    const moves = await axios.get(`${url}/location?limit=${limit}`);
+    return moves.data.results;
   } catch (error) {
-    logger.error(`Failed to get locations ${error}`);
-    throw error;
+    logger.error(`Failed to load locations: ${error}`);
+    return [];
   }
 };
+
+export { getAllLocations };

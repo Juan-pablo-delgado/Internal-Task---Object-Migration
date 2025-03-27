@@ -6,7 +6,7 @@ const getAllPokemons = async (
   limit: number
 ): Promise<Pokemons[]> => {
   try {
-    const pokemons = await axios.get(`${url}?offset=0&limit=${limit}`);
+    const pokemons = await axios.get(`${url}/pokemon?limit=${limit}`);
     logger.info("All pokemons load");
     return pokemons.data.results;
   } catch (error) {
