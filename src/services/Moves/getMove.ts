@@ -1,7 +1,7 @@
 import axios from "axios";
 const logger = require("pino")();
 
-const getMove = async (move: Moves): Promise<Locations> => {
+const getMove = async (move: Moves): Promise<Move> => {
   try {
     const data = await axios.get(move.url);
     logger.info(`move ${move.name} load correctly`);
