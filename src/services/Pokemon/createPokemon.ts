@@ -1,90 +1,80 @@
-// import axios from "axios";
-// import { getAllLocations } from "../Locations/getAllLocations";
-// import { createLocation } from "../Locations/createLocation";
-// import { getAllMoves } from "../Moves/getAllMoves";
-// import { create } from "domain";
-// import { createMove } from "../Moves/createMove";
-// const logger = require("pino")();
+import axios from "axios";
+import { enviromentVariables } from "../../config/envVariables";
 
-// import { enviromentVariables } from "../../config/envVariables";
-// const { API_URL, API_KEY_HS } = enviromentVariables;
+const logger = require("pino")();
+const { API_URL, API_KEY_HS } = enviromentVariables;
+const headers = {
+  Authorization: `Bearer ${API_KEY_HS}`,
+};
 
-// const headers = {
-//   Authorization: `Bearer ${API_KEY_HS}`,
-// };
+const getStat = (stats: Stat[], stat: string): number => {
+  const valueBase = stats.find((e) => {
+    return e.stat.name === stat;
+  });
+  return valueBase ? valueBase.base_stat : 0;
+};
 
-// const searhcStat = (stats: Stat[], stat: string): number => {
-//   try {
-//     return stats.filter((e) => {
-//       return e.stat.name === stat;
-//     })[0].base_stat;
-//   } catch (error) {
-//     logger.error(`Stat ${stat} not found`);
-//     return 0;
-//   }
-// };
+const getTypes = async (): Promise<[]> => {
+  const response = await axios.get(
+    `https://api.hubapi.com/crm/v3/properties/contact/types`,
+    { headers }
+  );
+  return response.data.options;
+};
 
-// const searchTypes = (types: Type[]): string[] => {
-//   const type: string[] = [];
-//   try {
-//     types.forEach((e) => {
-//       type.push(e.type.name);
-//     });
-//     return type;
-//   } catch (error) {
-//     logger.error("types not found");
-//     return type;
-//   }
-// };
+const createOption = async (option: string, options: any[]) => {
+  options.push({ label: option, value: option, hidden: false });
+  const newOptions = options;
+  try {
+    await axios.patch(
+      `https://api.hubapi.com/crm/v3/properties/contact/types`,
+      { options: newOptions },
+      { headers }
+    );
+    logger.info(
+      `The new option, ${option}, has been incorporated into the Types.`
+    );
+  } catch (error) {
+    logger.error(
+      `Failed to create the option ${option} in Types error: ${error}`
+    );
+  }
+};
 
-// export const createPokemon = async (pokemon: Pokemon) => {
-//   const newPokemon = {
-//     pokedex_id: pokemon.id,
-//     firstname: pokemon.name,
-//     hp: searhcStat(pokemon.stats, "hp"),
-//     attack: searhcStat(pokemon.stats, "attack"),
-//     defense: searhcStat(pokemon.stats, "defense"),
-//     special_defense: searhcStat(pokemon.stats, "special-defense"),
-//     special_attack: searhcStat(pokemon.stats, "special-attack"),
-//     speed: searhcStat(pokemon.stats, "speed"),
-//     types: searchTypes(pokemon.types).join(";"),
-//   };
+const createPokemon = async (pokemon: Pokemon) => {
+  const listTypes: any[] = await getTypes();
+  const types: string[] = pokemon.types.reduce<string[]>((acc, e) => {
+    acc.push(e.type.name);
+    return acc;
+  }, []);
+  const properties = {
+    pokedex_id: pokemon.id,
+    firstname: pokemon.name,
+    hp: getStat(pokemon.stats, "hp"),
+    attack: getStat(pokemon.stats, "attack"),
+    defense: getStat(pokemon.stats, "defense"),
+    special_defense: getStat(pokemon.stats, "special-defense"),
+    special_attack: getStat(pokemon.stats, "special-attack"),
+    speed: getStat(pokemon.stats, "speed"),
+    types: types.join(";"),
+  };
 
-//   const locationAreas = await getAllLocations(pokemon.location_area_encounters);
-//   const locationAssociations = await Promise.all(
-//     locationAreas.map(async (area) => {
-//       return await createLocation(area);
-//     })
-//   );
+  types.map(async (element) => {
+    !listTypes.some((item) => item.label === element)
+      ? await createOption(element, listTypes)
+      : null;
+  });
 
-//   const moves = await Promise.all(
-//     pokemon.moves.map(async (move) => {
-//       return await getAllMoves(move.move.url);
-//     })
-//   );
+  try {
+    axios.post(`${API_URL}/contacts`, { properties }, { headers });
+    logger.info(
+      `The Pokemon ${pokemon.name} has been successfully created in HubSpot.`
+    );
+  } catch (error) {
+    logger.error(
+      `An error occurred while attempting to create the Pokémon ${pokemon.name} in HubSpot: ${error}. `
+    );
+  }
+};
 
-//   const moveAssociations = await Promise.all(
-//     moves.map(async (move) => {
-//       return await createMove(move);
-//     })
-//   );
-
-//   // const associations = [...moveAssociations.filter((e) => e !== null)];
-//   const associations = [
-//     ...locationAssociations,
-//     ...moveAssociations.filter((e) => e !== null),
-//   ];
-//   try {
-//     axios.post(
-//       `${API_URL}/contacts`,
-//       {
-//         properties: newPokemon,
-//         associations,
-//       },
-//       { headers }
-//     );
-//     logger.info(`Pokemon ${pokemon.name} created correctly in HubSpot`);
-//   } catch (error) {
-//     logger.error(`Failed to load Pokemon ${pokemon.name}: ${error}`);
-//   }
-// };
+export { createPokemon };
