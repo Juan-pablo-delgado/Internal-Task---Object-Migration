@@ -1,44 +1,40 @@
 import axios from "axios";
-const logger = require("pino")();
-import {  enviromentVariables } from "../../config/envVariables";
-const { API_URL, API_KEY_HS } = enviromentVariables;
+import { enviromentVariables } from "../../config/envVariables";
 
+const logger = require("pino")();
+const { API_URL, API_KEY_HS } = enviromentVariables;
 const headers = {
   Authorization: `Bearer ${API_KEY_HS}`,
 };
 
-export const createLocation = async (
-  locationArea: Location_area_encounters,
-) => {
+const createLocation = async (ubication: Ubication) => {
+  const generation = ubication.game_indices.reduce<string[]>((acc, e) => {
+    acc.push(e.generation.name);
+    return acc;
+  }, []);
 
-  const newLocation = {
-    name: locationArea.location_area.name,
-    location_id: Number(locationArea.location_area.url.match(/(\d+)\/$/)![1]),
+  const properties = {
+    name: ubication.name,
+    number_of_areas: ubication.areas.length,
+    location_id: ubication.id,
+    region: ubication.region.name,
+    generation: generation.join(", "),
   };
 
   try {
-    const id = await axios.post(`${API_URL}/companies`,
-      { properties: newLocation },
+    await axios.post(
+      `${API_URL}/companies`,
+      { properties: properties },
       { headers }
-    ).then((res) => {
-      return (res.data.id)
-    })
-    logger.info(`Pokemon ${locationArea.location_area.name} created correctly in HubSpot`);
-    return {
-      "types": [
-        {
-          "associationCategory": "HUBSPOT_DEFINED",
-          "associationTypeId": 279
-        }
-      ],
-      "to": {
-        "id": id
-      }
-    }
+    );
+    logger.info(
+      `The location ${ubication.name} has been successfully created in HubSpot.`
+    );
   } catch (error) {
     logger.error(
-      `Failed to load Pokemon ${locationArea.location_area.name}: ${error}`
+      `An error occurred while attempting to create the Pokemon ${ubication.name} in HubSpot: ${error}. `
     );
-    return null;
   }
 };
+
+export { createLocation };
