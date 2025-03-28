@@ -21,10 +21,11 @@ const loadAll = async (): Promise<void> => {
   //   createPokemon(pokemon);
   // });
 
-  moves.forEach(async (e) => {
-    const move = await getMove(e);
-    createMove(move);
-  });
+  //Create Moves
+  // moves.forEach(async (e) => {
+  //   const move = await getMove(e);
+  //   createMove(move);
+  // });
 
   //Create locations
   // locations.forEach(async (e) => {
