@@ -9,12 +9,12 @@ const headers = {
 
 const getMovesFromHS = async () => {
   const hs_moves = await axios
-    .get(`https://api.hubapi.com/crm/v3/objects/moves`, {
+    .get(`https://api.hubapi.com/crm/v3/objects/moves?properties=name`, {
       headers,
     })
     .then((res) => res.data);
 
-  return hs_moves;
+  return hs_moves.results;
 };
 
 const getStat = (stats: Stat[], stat: string): number => {
