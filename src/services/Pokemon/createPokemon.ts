@@ -7,6 +7,16 @@ const headers = {
   Authorization: `Bearer ${API_KEY_HS}`,
 };
 
+const getMovesFromHS = async () => {
+  const hs_moves = await axios
+    .get(`https://api.hubapi.com/crm/v3/objects/moves`, {
+      headers,
+    })
+    .then((res) => res.data);
+
+  return hs_moves;
+};
+
 const getStat = (stats: Stat[], stat: string): number => {
   const valueBase = stats.find((e) => {
     return e.stat.name === stat;
@@ -59,22 +69,27 @@ const createPokemon = async (pokemon: Pokemon) => {
     types: types.join(";"),
   };
 
-  types.map(async (element) => {
-    !listTypes.some((item) => item.label === element)
-      ? await createOption(element, listTypes)
-      : null;
-  });
+  await Promise.all(
+    types.map(async (element) => {
+      !listTypes.some((item) => item.label === element)
+        ? await createOption(element, listTypes)
+        : null;
+    })
+  );
 
-  try {
-    axios.post(`${API_URL}/contacts`, { properties }, { headers });
-    logger.info(
-      `The Pokemon ${pokemon.name} has been successfully created in HubSpot.`
-    );
-  } catch (error) {
-    logger.error(
-      `An error occurred while attempting to create the Pokémon ${pokemon.name} in HubSpot: ${error}. `
-    );
-  }
+  const hs_moves = await getMovesFromHS();
+  console.log(pokemon.moves[0].move.name);
+  console.log(hs_moves);
+  // try {
+  //   axios.post(`${API_URL}/contacts`, { properties }, { headers });
+  //   logger.info(
+  //     `The Pokemon ${pokemon.name} has been successfully created in HubSpot.`
+  //   );
+  // } catch (error) {
+  //   logger.error(
+  //     `An error occurred while attempting to create the Pokémon ${pokemon.name} in HubSpot: ${error}. `
+  //   );
+  // }
 };
 
 export { createPokemon };

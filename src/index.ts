@@ -16,22 +16,28 @@ const loadAll = async (): Promise<void> => {
   const locations: Locations[] = await getAllLocations(POKE_API, 1);
 
   //Create Moves
-  // moves.forEach(async (e) => {
-  //   const move = await getMove(e);
-  //   createMove(move);
-  // });
+  // await Promise.all(
+  //   moves.map(async (e) => {
+  //     const move = await getMove(e);
+  //     await createMove(move);
+  //   })
+  // );
 
   //Create locations
-  // locations.forEach(async (e) => {
-  //   const location = await getLocation(e);
-  //   createLocation(location);
-  // });
+  // await Promise.all(
+  //   locations.map(async (e) => {
+  //     const location = await getLocation(e);
+  //     await createLocation(location);
+  //   })
+  // );
 
-  //Create pokemons
-  // pokemons.forEach(async (e) => {
-  //   const pokemon = await getPokemon(e);
-  //   createPokemon(pokemon);
-  // });
+  // Create pokemons
+  await Promise.all(
+    pokemons.map(async (e) => {
+      const pokemon = await getPokemon(e);
+      await createPokemon(pokemon);
+    })
+  );
 };
 
 loadAll();
