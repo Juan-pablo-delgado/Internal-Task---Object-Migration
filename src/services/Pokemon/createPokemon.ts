@@ -78,8 +78,11 @@ const createPokemon = async (pokemon: Pokemon) => {
   );
 
   const hs_moves = await getMovesFromHS();
-  console.log(pokemon.moves[0].move.name);
   console.log(hs_moves);
+  // console.log(pokemon.moves[0].move.name);
+  pokemon.moves.map((e) => {
+    console.log(e.move.name);
+  });
   // try {
   //   axios.post(`${API_URL}/contacts`, { properties }, { headers });
   //   logger.info(
