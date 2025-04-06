@@ -1,6 +1,9 @@
 import axios from "axios";
 import pino from "pino";
 import { enviromentVariables } from "../../config/envVariables";
+import rateLimit from 'axios-rate-limit';
+
+const https = rateLimit(axios.create(), { maxRequests: 15, perMilliseconds: 1000, maxRPS: 15 });
 
 const logger = pino();
 const { API_URL, API_KEY_HS } = enviromentVariables;
@@ -10,7 +13,7 @@ const headers = {
 };
 
 const getTypes = async (): Promise<[]> => {
-  const response = await axios.get(
+  const response = await https.get(
     `https://api.hubapi.com/crm/v3/properties/moves/power`,
     { headers }
   );
@@ -18,14 +21,18 @@ const getTypes = async (): Promise<[]> => {
 };
 
 const createOption = async (option: number, options: any[]) => {
+  if (!option) return
+
   options.push({
-    label: option.toString(),
-    value: option.toString(),
+    label: option?.toString(),
+    value: option?.toString(),
     hidden: false,
   });
-  const newOptions = options;
+
+  const newOptions = options
+
   try {
-    await axios.patch(
+    await https.patch(
       `https://api.hubapi.com/crm/v3/properties/moves/power`,
       { options: newOptions },
       { headers }
@@ -50,12 +57,12 @@ const createMove = async (move: Move) => {
     power: move.power,
   };
 
-  !listTypes.some((item) => item.label === move.power.toString())
-    ? await createOption(move.power, listTypes)
-    : null;
+  !listTypes.some((item) => item.label === move.power?.toString())
+    && await createOption(move.power, listTypes)
+
 
   try {
-    await axios.post(`${API_URL}/moves`, { properties }, { headers });
+    await https.post(`${API_URL}/moves`, { properties }, { headers });
     logger.info(
       `The Move ${move.name} has been successfully created in HubSpot.`
     );

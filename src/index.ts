@@ -8,14 +8,15 @@ import { getMove } from "./services/Moves/getMove";
 import { createPokemon } from "./services/Pokemon/createPokemon";
 import { createLocation } from "./services/Locations/createLocation";
 import { createMove } from "./services/Moves/createMove";
+
 const { POKE_API } = enviromentVariables;
 
 const loadAll = async (): Promise<void> => {
-  const pokemons: Pokemons[] = await getAllPokemons(POKE_API, 1);
+  const pokemons: Pokemons[] = await getAllPokemons(POKE_API, 100);
   const moves: Moves[] = await getAllMoves(POKE_API, 1);
   const locations: Locations[] = await getAllLocations(POKE_API, 1);
 
-  // // Create Moves
+  // Create Moves
   // await Promise.all(
   //   moves.map(async (e) => {
   //     const move = await getMove(e);

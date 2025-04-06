@@ -1,7 +1,9 @@
 import axios from "axios";
 import { enviromentVariables } from "../../config/envVariables";
 import pino from "pino";
+import rateLimit from 'axios-rate-limit';
 
+const https = rateLimit(axios.create(), { maxRequests: 9, perMilliseconds: 10000, maxRPS: 9 });
 const logger = pino();
 const { API_URL, API_KEY_HS } = enviromentVariables;
 const headers = {
@@ -23,7 +25,7 @@ const createLocation = async (ubication: Ubication) => {
   };
 
   try {
-    await axios.post(
+    await https.post(
       `${API_URL}/companies`,
       { properties: properties },
       { headers }
