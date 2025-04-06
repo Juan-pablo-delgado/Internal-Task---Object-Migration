@@ -1,5 +1,7 @@
 import axios from "axios";
-const logger = require("pino")();
+import pino from "pino";
+
+const logger = pino();
 
 const getMove = async (move: Moves): Promise<Move> => {
   try {

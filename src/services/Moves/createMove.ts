@@ -1,6 +1,8 @@
 import axios from "axios";
-const logger = require("pino")();
+import pino from "pino";
 import { enviromentVariables } from "../../config/envVariables";
+
+const logger = pino();
 const { API_URL, API_KEY_HS } = enviromentVariables;
 
 const headers = {

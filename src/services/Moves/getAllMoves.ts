@@ -1,5 +1,7 @@
 import axios from "axios";
-const logger = require("pino")();
+import pino from "pino";
+
+const logger = pino();
 
 const getAllMoves = async (url: string, limit: number): Promise<Pokemons[]> => {
   try {

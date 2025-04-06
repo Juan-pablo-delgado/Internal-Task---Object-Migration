@@ -1,7 +1,8 @@
 import axios from "axios";
 import { enviromentVariables } from "../../config/envVariables";
+import pino from "pino";
 
-const logger = require("pino")();
+const logger = pino();
 const { API_URL, API_KEY_HS } = enviromentVariables;
 const headers = {
   Authorization: `Bearer ${API_KEY_HS}`,

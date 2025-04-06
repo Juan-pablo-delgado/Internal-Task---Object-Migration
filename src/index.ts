@@ -31,13 +31,13 @@ const loadAll = async (): Promise<void> => {
   //   })
   // );
 
-  // // Create pokemons
-  // await Promise.all(
-  //   pokemons.map(async (e) => {
-  //     const pokemon = await getPokemon(e);
-  //     await createPokemon(pokemon);
-  //   })
-  // );
+  // Create pokemons
+  await Promise.all(
+    pokemons.map(async (e) => {
+      const pokemon = await getPokemon(e);
+      await createPokemon(pokemon);
+    })
+  );
 };
 
 loadAll();

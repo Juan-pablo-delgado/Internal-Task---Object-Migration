@@ -1,5 +1,7 @@
 import axios from "axios";
-const logger = require("pino")();
+import pino from "pino";
+
+const logger = pino();
 
 const getLocation = async (location: Locations): Promise<Ubication> => {
   try {
