@@ -88,7 +88,7 @@ const createPokemon = async (pokemon: Pokemon) => {
       })
       return;
     });
-
+    //Asociaciation of moves
     const associations = associationMoves.map((e) => {
       return {
         "types": [
@@ -102,6 +102,8 @@ const createPokemon = async (pokemon: Pokemon) => {
         },
       };
     })
+
+    //Create pokemon
     await https.post(`${API_URL}/contacts`, {
       properties, associations
     }, { headers });
