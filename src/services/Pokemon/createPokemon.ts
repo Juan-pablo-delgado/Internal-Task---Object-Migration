@@ -1,9 +1,13 @@
 import axios from "axios";
 import { enviromentVariables } from "../../config/envVariables";
 import pino from "pino";
-import rateLimit from 'axios-rate-limit';
+import rateLimit from "axios-rate-limit";
 
-const https = rateLimit(axios.create(), { maxRequests: 15, perMilliseconds: 1000, maxRPS: 15 });
+const https = rateLimit(axios.create(), {
+  maxRequests: 15,
+  perMilliseconds: 1000,
+  maxRPS: 15,
+});
 const logger = pino();
 const { API_URL, API_KEY_HS } = enviromentVariables;
 const headers = {
@@ -42,7 +46,7 @@ const createOption = async (option: string, options: any[]) => {
     await https.patch(
       `https://api.hubapi.com/crm/v3/properties/contact/types`,
       { options: newOptions },
-      { headers },
+      { headers }
     );
     logger.info(
       `The new option, ${option}, has been incorporated into the Types.`
@@ -58,10 +62,11 @@ const createPokemon = async (pokemon: Pokemon) => {
   const listTypes: any[] = await getTypes();
   const associationMoves: { id: number }[] = [];
   const hs_moves = await getMovesFromHS();
-  const types: string[] = pokemon.types?.reduce<string[]>((acc, e) => {
-    acc.push(e.type?.name);
-    return acc;
-  }, []) ?? [];
+  const types: string[] =
+    pokemon.types?.reduce<string[]>((acc, e) => {
+      acc.push(e.type?.name);
+      return acc;
+    }, []) ?? [];
   await Promise.all(
     types.map(async (element) => {
       !listTypes.some((item) => item.label === element)
@@ -85,28 +90,33 @@ const createPokemon = async (pokemon: Pokemon) => {
       hs_moves?.find((e: any) => {
         e.properties?.name === poke.move?.name &&
           associationMoves.push({ id: e.properties?.hs_object_id });
-      })
+      });
       return;
     });
     //Asociaciation of moves
     const associations = associationMoves.map((e) => {
       return {
-        "types": [
+        types: [
           {
-            "associationCategory": "USER_DEFINED",
-            "associationTypeId": 60
-          }
+            associationCategory: "USER_DEFINED",
+            associationTypeId: 60,
+          },
         ],
-        "to": {
-          "id": e.id,
+        to: {
+          id: e.id,
         },
       };
-    })
+    });
 
     //Create pokemon
-    await https.post(`${API_URL}/contacts`, {
-      properties, associations
-    }, { headers });
+    await https.post(
+      `${API_URL}/contacts`,
+      {
+        properties,
+        associations,
+      },
+      { headers }
+    );
     logger.info(
       `The Pokemon ${pokemon?.name} has been successfully created in HubSpot.`
     );

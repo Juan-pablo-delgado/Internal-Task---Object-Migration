@@ -1,9 +1,13 @@
 import axios from "axios";
 import pino from "pino";
 import { enviromentVariables } from "../../config/envVariables";
-import rateLimit from 'axios-rate-limit';
+import rateLimit from "axios-rate-limit";
 
-const https = rateLimit(axios.create(), { maxRequests: 15, perMilliseconds: 1000, maxRPS: 15 });
+const https = rateLimit(axios.create(), {
+  maxRequests: 15,
+  perMilliseconds: 1000,
+  maxRPS: 15,
+});
 
 const logger = pino();
 const { API_URL, API_KEY_HS } = enviromentVariables;
@@ -21,7 +25,7 @@ const getTypes = async (): Promise<[]> => {
 };
 
 const createOption = async (option: number, options: any[]) => {
-  if (!option) return
+  if (!option) return;
 
   options.push({
     label: option?.toString(),
@@ -29,7 +33,7 @@ const createOption = async (option: number, options: any[]) => {
     hidden: false,
   });
 
-  const newOptions = options
+  const newOptions = options;
 
   try {
     await https.patch(
@@ -57,9 +61,8 @@ const createMove = async (move: Move) => {
     power: move.power,
   };
 
-  !listTypes.some((item) => item.label === move.power?.toString())
-    && await createOption(move.power, listTypes)
-
+  !listTypes.some((item) => item.label === move.power?.toString()) &&
+    (await createOption(move.power, listTypes));
 
   try {
     await https.post(`${API_URL}/moves`, { properties }, { headers });
